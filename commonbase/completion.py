@@ -5,24 +5,24 @@ class Completion:
     @classmethod
     def create(
         cls,
-        projectId,
-        apiKey=None,
+        project_id,
+        api_key=None,
         prompt=None,
-        chatContext=None,
-        userId=None,
+        chat_context=None,
+        user_id=None,
         variables=None,
-        truncateVariable=None,
-        providerConfig=None,
+        truncate_variable=None,
+        provider_config=None,
     ):
         data = {
-            "projectId": projectId,
-            "apiKey": apiKey,
+            "projectId": project_id,
+            "apiKey": api_key,
             "prompt": prompt,
             "variables": variables,
-            "context": chatContext,
-            "userId": userId,
-            "truncateVariable": truncateVariable,
-            "providerConfig": providerConfig,
+            "context": chat_context,
+            "userId": user_id,
+            "truncateVariable": truncate_variable,
+            "providerConfig": provider_config,
         }
         data = {k: v for k, v in data.items() if v is not None}
         response = requests.post("https://api.commonbase.com/completions", json=data)
