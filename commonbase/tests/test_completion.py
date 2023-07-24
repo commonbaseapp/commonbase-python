@@ -44,3 +44,16 @@ def test_completion_response():
     )
 
     assert result.completed and result.choices[0].text.strip() == "123abc"
+
+
+def test_completion_stream():
+    response_count = 0
+
+    for response in commonbase.Completion.stream(
+        project_id=os.getenv("CB_PROJECT_ID"),
+        prompt="Tell me about artificial intelligence.",
+    ):
+        assert len(response.choices) > 0 and response.choices[0].text is not None
+        response_count += 1
+
+    assert response_count > 0
