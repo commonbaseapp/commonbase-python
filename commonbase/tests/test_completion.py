@@ -1,8 +1,6 @@
 import os
 import commonbase
 
-from ..tests import get_project_id
-
 
 def test_no_project_id():
     result = commonbase.Completion.create(project_id=None)
