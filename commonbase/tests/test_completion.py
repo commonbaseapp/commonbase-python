@@ -1,17 +1,21 @@
 import os
+import pytest
 import commonbase
 
 
 def test_no_project_id():
-    result = commonbase.Completion.create(project_id=None)
+    with pytest.raises(AssertionError):
+        commonbase.Completion.create(project_id=None, prompt="xxx")
 
-    assert "error" in result
+
+def test_no_prompt():
+    with pytest.raises(AssertionError):
+        commonbase.Completion.create(project_id="xxx", prompt=None)
 
 
-def test_no_prompt_or_variables():
-    result = commonbase.Completion.create(project_id=os.getenv("CB_PROJECT_ID"))
-
-    assert "error" in result
+def test_invalid_project_id():
+    with pytest.raises(commonbase.CommonbaseException):
+        commonbase.Completion.create(project_id="", prompt="Hello")
 
 
 def test_completion_prompt():
@@ -19,16 +23,24 @@ def test_completion_prompt():
         project_id=os.getenv("CB_PROJECT_ID"), prompt="Hello"
     )
 
-    assert result["completed"] == True and len(result["choices"]) > 0
+    assert result.completed
+    assert result.invocation_id is not None
+    assert result.project_id is not None
+    assert result.type == "text" or result.type == "chat"
+    assert result.model is not None
+    assert len(result.choices) > 0
+
+    choice = result.choices[0]
+
+    assert choice.text is not None
+    assert choice.index >= 0
+    assert choice.finish_reason is not None
 
 
-def test_completion_variables():
+def test_completion_response():
     result = commonbase.Completion.create(
         project_id=os.getenv("CB_PROJECT_ID"),
-        variables={
-            "user_name": "Brandon",
-            "project_name": "test",
-        },
+        prompt="Please return the string '123abc' to me without the quotes.",
     )
 
-    assert result["completed"] == True and len(result["choices"]) > 0
+    assert result.completed and result.choices[0].text.strip() == "123abc"

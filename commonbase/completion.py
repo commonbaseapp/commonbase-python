@@ -1,4 +1,6 @@
 import requests
+from commonbase.completion_response import CompletionResponse
+from commonbase.exceptions import CommonbaseException
 
 
 class Completion:
@@ -6,19 +8,20 @@ class Completion:
     def create(
         cls,
         project_id,
+        prompt,
         api_key=None,
-        prompt=None,
         chat_context=None,
         user_id=None,
-        variables=None,
         truncate_variable=None,
         provider_config=None,
     ):
+        assert project_id is not None
+        assert prompt is not None
+
         data = {
             "projectId": project_id,
-            "apiKey": api_key,
             "prompt": prompt,
-            "variables": variables,
+            "apiKey": api_key,
             "context": chat_context,
             "userId": user_id,
             "truncateVariable": truncate_variable,
@@ -26,4 +29,10 @@ class Completion:
         }
         data = {k: v for k, v in data.items() if v is not None}
         response = requests.post("https://api.commonbase.com/completions", json=data)
-        return response.json()
+
+        json = response.json()
+
+        if "error" in json:
+            raise CommonbaseException(json)
+
+        return CompletionResponse(response.json())

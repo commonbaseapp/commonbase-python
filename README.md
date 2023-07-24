@@ -17,11 +17,8 @@ project_id="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
 
 result = commonbase.Completion.create(
         project_id=project_id,
-        variables={
-            "user_name": "Brandon",
-            "project_name": "test",
-        },
+        prompt="Hello, tell me about LLMs"
     )
 
-print(result["choices"][0])
+print(result.choices[0])
 ```
