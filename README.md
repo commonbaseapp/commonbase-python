@@ -15,10 +15,7 @@ import commonbase
 
 project_id="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
 
-result = commonbase.Completion.create(
-        project_id=project_id,
-        prompt="Hello, tell me about LLMs"
-    )
+result = commonbase.Completion.create(project_id=project_id, prompt="Hello!")
 
-print(result.choices[0])
+print(result.choices[0].text)
 ```
