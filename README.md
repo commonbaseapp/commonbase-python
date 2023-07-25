@@ -13,7 +13,7 @@ pip install commonbase
 ## Usage
 
 A project ID is required for all Commonbase requests. You can find your project ID
-in the [Commonbase Dashboard](https://commonbase.com/test-50727/project/test/overview).
+in the [Commonbase Dashboard](https://commonbase.com/).
 
 ## Text Completion
 
