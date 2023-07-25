@@ -1,23 +1,25 @@
-from typing import Any, Generator
+from typing import Generator, Optional
 import json
 import requests
 import sseclient
 from commonbase.completion_response import CompletionResponse
 from commonbase.exceptions import CommonbaseException
+from commonbase.chat_context import ChatContext
+from commonbase.provider_config import ProviderConfig
 
 
 class Completion:
     @classmethod
     def _send_completion_request(
         cls,
-        project_id,
-        prompt,
-        api_key=None,
-        chat_context=None,
-        user_id=None,
-        truncate_variable=None,
-        provider_config=None,
-        stream=False,
+        project_id: str,
+        prompt: str,
+        api_key: Optional[str] = None,
+        chat_context: Optional[ChatContext] = None,
+        user_id: Optional[str] = None,
+        truncate_variable: Optional[bool] = None,
+        provider_config: Optional[ProviderConfig] = None,
+        stream: bool = False,
     ) -> requests.Response:
         assert project_id is not None
         assert prompt is not None
@@ -26,10 +28,12 @@ class Completion:
             "projectId": project_id,
             "prompt": prompt,
             "apiKey": api_key,
-            "context": chat_context,
+            "context": chat_context._to_dict() if chat_context is not None else None,
             "userId": user_id,
             "truncateVariable": truncate_variable,
-            "providerConfig": provider_config,
+            "providerConfig": provider_config._to_dict()
+            if provider_config is not None
+            else None,
             "stream": stream,
         }
         data = {k: v for k, v in data.items() if v is not None}
@@ -43,14 +47,37 @@ class Completion:
     @classmethod
     def create(
         cls,
-        project_id,
-        prompt,
-        api_key=None,
-        chat_context=None,
-        user_id=None,
-        truncate_variable=None,
-        provider_config=None,
+        project_id: str,
+        prompt: str,
+        api_key: Optional[str] = None,
+        chat_context: Optional[ChatContext] = None,
+        user_id: Optional[str] = None,
+        truncate_variable: Optional[bool] = None,
+        provider_config: Optional[ProviderConfig] = None,
     ) -> CompletionResponse:
+        """Creates a completion for the given prompt.
+
+        Parameters
+        ----------
+        project_id : str
+            The ID of your Commonbase project.
+        prompt : str
+            The prompt for which a completion is generated.
+        api_key : str, optional
+            The API key used for authentication. Currently not necessary.
+        chat_context : ChatContext, optional
+            The list of chat messages in a conversation
+        user_id : str, optional
+            The User ID that will be logged for the invocation.
+        truncate_variable : bool, optional
+            A flag to toggle redaction variable truncation.
+
+        Raises
+        ------
+        CommonbaseException
+            If the request is malformed or there is an API error.
+        """
+
         response = Completion._send_completion_request(
             project_id=project_id,
             prompt=prompt,
@@ -64,7 +91,7 @@ class Completion:
 
         json = response.json()
 
-        if "error" in json:
+        if response.status_code >= 400 or "error" in json:
             raise CommonbaseException(json)
 
         return CompletionResponse(response.json())
@@ -72,14 +99,36 @@ class Completion:
     @classmethod
     def stream(
         cls,
-        project_id,
-        prompt,
-        api_key=None,
-        chat_context=None,
-        user_id=None,
-        truncate_variable=None,
-        provider_config=None,
-    ) -> Generator[CompletionResponse, Any, None]:
+        project_id: str,
+        prompt: str,
+        api_key: Optional[str] = None,
+        chat_context: Optional[ChatContext] = None,
+        user_id: Optional[str] = None,
+        truncate_variable: Optional[bool] = None,
+        provider_config: Optional[ProviderConfig] = None,
+    ) -> Generator[CompletionResponse, None, None]:
+        """Creates a completion stream for the given prompt.
+
+        Parameters
+        ----------
+        project_id : str
+            The ID of your Commonbase project.
+        prompt : str
+            The prompt for which a completion is generated.
+        api_key : str, optional
+            The API key used for authentication. Currently not necessary.
+        chat_context : ChatContext, optional
+            The list of chat messages in a conversation
+        user_id : str, optional
+            The User ID that will be logged for the invocation.
+        truncate_variable : bool, optional
+            A flag to toggle redaction variable truncation.
+
+        Raises
+        ------
+        CommonbaseException
+            If the request is malformed or there is an API error.
+        """
         response = Completion._send_completion_request(
             project_id=project_id,
             prompt=prompt,
@@ -90,7 +139,10 @@ class Completion:
             provider_config=provider_config,
             stream=True,
         )
-        client = sseclient.SSEClient(response)
 
+        if response.status_code >= 400:
+            raise CommonbaseException(response.json())
+
+        client = sseclient.SSEClient(response)
         for event in client.events():
             yield CompletionResponse(json.loads(event.data))
