@@ -47,7 +47,7 @@ for completion in result:
 
 ### Chat
 
-To create a chat completion, use the `context` method to provide a list of chat messages.
+To create a chat completion, use the `chat_context` argument to provide a list of chat messages.
 You must also set the OpenAI configuration to `chat`. In this mode, the `prompt` argument
 functions as a system message.
 
