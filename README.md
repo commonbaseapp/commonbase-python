@@ -15,59 +15,21 @@ pip install commonbase
 A project ID is required for all Commonbase requests. You can find your project ID
 in the [Commonbase Dashboard](https://commonbase.com/).
 
-## Text Completion
-
-To create a basic text completion, use the `Completion.create` class method with a `prompt` argument.
+To create text and chat completions, use `commonbase.Completion.create`:
 
 ```py
 import commonbase
 
-project_id="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
-
-result = commonbase.Completion.create(project_id=project_id, prompt="Hello!")
-
-print(result.choices[0].text)
-```
-
-Use `Completion.stream` to stream a completion response.
-
-```py
-import commonbase
-
-project_id="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
-
-result = commonbase.Completion.stream(
-    project_id=project_id,
-    prompt="Write me a short essay about artificial intelligence."
-)
-
-for completion in result:
-    print(completion.choices[0].text, end="")
-```
-
-### Chat
-
-To create a chat completion, use the `chat_context` argument to provide a list of chat messages.
-You must also set the OpenAI configuration to `chat`. In this mode, the `prompt` argument
-functions as a system message.
-
-```py
-import commonbase
-
-project_id="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+project_id=
 
 result = commonbase.Completion.create(
-    project_id=project_id,
-    prompt="You are an assistant who helps users with tech problems.",
-    chat_context=commonbase.ChatContext([
-        commonbase.ChatMessage(role="user", content="My internet isn't working."),
-        commonbase.ChatMessage(role="assistant", content="Have you tried restarting your router?"),
-        commonbase.ChatMessage(role="user", content="Yes I've tried that."),
-    ]),
-    provider_config=commonbase.ProviderConfig(
-        provider="cb-openai-eu", params=commonbase.OpenAIParams(type="chat")
-    ),
+    project_id="<your_project_id>",
+    prompt="Hello!"
 )
 
 print(result.choices[0].text)
 ```
+
+To stream a completion as it is generated, use `commonbase.Completion.stream`.
+
+For more examples, see [/examples](https://github.com/commonbaseapp/commonbase-python/tree/main/examples).
