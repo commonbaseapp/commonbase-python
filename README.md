@@ -14,10 +14,9 @@ pip install commonbase
 
 ## Usage
 
-A project ID is required for all Commonbase requests. You can find your project ID
-in the [Commonbase Dashboard](https://commonbase.com/).
+A Project ID and API Key are required for all Commonbase requests. You can find your project ID and generate an API key in the [Commonbase Dashboard](https://commonbase.com/).
 
-To create text and chat completions, use `commonbase.Completion.create`:
+To create a completion, provide your Project ID, API Key, and prompt to `Completion.create`.
 
 ```py
 import commonbase
@@ -25,13 +24,14 @@ import commonbase
 project_id=
 
 result = commonbase.Completion.create(
-    project_id="<your_project_id>",
+    api_key="YOUR_API_KEY",
+    project_id="YOUR_PROJECT_ID",
     prompt="Hello!"
 )
 
-print(result.choices[0].text)
+print(result.best_result)
 ```
 
-To stream a completion as it is generated, use `commonbase.Completion.stream`.
+To stream a completion as it is generated, use `Completion.stream`.
 
-For more examples, see [/examples](https://github.com/commonbaseapp/commonbase-python/tree/main/examples).
+For more examples, see [/examples](https://github.com/commonbaseapp/commonbase-python/tree/main/examples) or check out our [Docs](https://docs.commonbase.com/quickstart/python).

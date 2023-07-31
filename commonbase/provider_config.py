@@ -34,7 +34,7 @@ class ProviderConfig:
     provider: Literal["openai", "cb-openai-eu", "anthropic"]
     params: Union[OpenAIParams, AnthropicParams]
 
-    def _to_dict(self) -> dict:
+    def _as_json(self) -> dict:
         return asdict(
             self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None}
         )
