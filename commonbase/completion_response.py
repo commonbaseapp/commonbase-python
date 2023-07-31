@@ -49,3 +49,7 @@ class CompletionResponse:
     @property
     def choices(self) -> list[CompletionChoice]:
         return [CompletionChoice(choice) for choice in self.json["choices"]]
+
+    @property
+    def best_result(self) -> str:
+        return self.choices[0].text

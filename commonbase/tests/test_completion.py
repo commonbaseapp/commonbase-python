@@ -3,42 +3,46 @@ import pytest
 import commonbase
 
 
+def test_create_no_api_key():
+    with pytest.raises(commonbase.CommonbaseException):
+        commonbase.Completion.create(api_key=None, project_id="")
+
+
 def test_create_no_project_id():
-    with pytest.raises(AssertionError):
-        commonbase.Completion.create(project_id=None, prompt="")  # type: ignore
+    with pytest.raises(commonbase.CommonbaseApiException):
+        commonbase.Completion.create(api_key="", project_id=None)  # type: ignore
 
 
-def test_stream_no_project_id():
-    with pytest.raises(AssertionError):
-        for _ in commonbase.Completion.stream(project_id=None, prompt=""):  # type: ignore
+def test_stream_no_api_key():
+    with pytest.raises(commonbase.CommonbaseException):
+        for _ in commonbase.Completion.stream(api_key=None, project_id=""):
             pass
 
 
-def test_create_no_prompt():
-    with pytest.raises(AssertionError):
-        commonbase.Completion.create(project_id="", prompt=None)  # type: ignore
-
-
-def test_stream_no_prompt():
-    with pytest.raises(AssertionError):
-        for _ in commonbase.Completion.stream(project_id="", prompt=None):  # type: ignore
+def test_stream_no_project_id():
+    with pytest.raises(commonbase.CommonbaseApiException):
+        for _ in commonbase.Completion.stream(api_key="", project_id=None, prompt=""):  # type: ignore
             pass
 
 
 def test_create_invalid_project_id():
-    with pytest.raises(commonbase.CommonbaseException):
-        commonbase.Completion.create(project_id="", prompt="Hello")
+    with pytest.raises(commonbase.CommonbaseApiException):
+        commonbase.Completion.create(api_key="", project_id="", prompt="Hello")
 
 
 def test_stream_invalid_project_id():
-    with pytest.raises(commonbase.CommonbaseException):
-        for _ in commonbase.Completion.stream(project_id="", prompt="Hello"):
+    with pytest.raises(commonbase.CommonbaseApiException):
+        for _ in commonbase.Completion.stream(
+            api_key="", project_id="", prompt="Hello"
+        ):
             pass
 
 
 def test_completion_prompt():
     result = commonbase.Completion.create(
-        project_id=os.getenv("CB_PROJECT_ID") or "", prompt="Hello"
+        api_key=os.getenv("CB_API_KEY") or "",
+        project_id=os.getenv("CB_PROJECT_ID") or "",
+        prompt="Hello",
     )
 
     assert result.completed
@@ -57,21 +61,33 @@ def test_completion_prompt():
 
 def test_completion_response():
     result = commonbase.Completion.create(
+        api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="Please return the string '123abc' to me without the quotes.",
     )
 
-    assert result.completed and result.choices[0].text.strip() == "123abc"
+    assert result.completed and result.best_result.strip() == "123abc"
+
+
+def test_completion_variables():
+    result = commonbase.Completion.create(
+        api_key=os.getenv("CB_API_KEY") or "",
+        project_id=os.getenv("CB_PROJECT_ID") or "",
+        variables={"user_name": "USERNAME", "email": "USER@COMPANY.COM"},
+    )
+
+    assert result.completed and result.best_result is not None
 
 
 def test_completion_stream():
     response_count = 0
 
     for response in commonbase.Completion.stream(
+        api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="Tell me about artificial intelligence.",
     ):
-        assert len(response.choices) > 0 and response.choices[0].text is not None
+        assert len(response.choices) > 0 and response.best_result is not None
         response_count += 1
 
     assert response_count > 0
@@ -87,6 +103,7 @@ def test_completion_context():
     )
 
     result = commonbase.Completion.create(
+        api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="You help people with geography.",
         chat_context=context,
@@ -95,4 +112,4 @@ def test_completion_context():
         ),
     )
 
-    assert result.completed and "germany" in result.choices[0].text.lower()
+    assert result.completed and "germany" in result.best_result.lower()

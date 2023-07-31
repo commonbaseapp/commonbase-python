@@ -12,5 +12,5 @@ class ChatMessage:
 class ChatContext:
     messages: Sequence[ChatMessage]
 
-    def _to_dict(self) -> dict:
+    def _as_json(self) -> dict:
         return asdict(self)
