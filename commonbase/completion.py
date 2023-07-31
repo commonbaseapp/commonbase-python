@@ -7,6 +7,7 @@ from commonbase.exceptions import CommonbaseApiException, CommonbaseException
 from commonbase.chat_context import ChatContext
 from commonbase.provider_config import ProviderConfig
 from commonbase.truncation_config import TruncationConfig
+from pkg_resources import get_distribution
 
 
 def _format_body(
@@ -63,7 +64,10 @@ def _send_completion_request(
         stream=stream,
     )
 
-    headers = {"Authorization": api_key}
+    headers = {
+        "Authorization": api_key,
+        "User-Agent": f"commonbase-python/{get_distribution('commonbase').version}",
+    }
 
     if stream:
         headers["Accept"] = "text/event-stream"
