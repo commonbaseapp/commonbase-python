@@ -109,9 +109,10 @@ class Completion:
             The Commonbase API key used to authenticate the request.
         project_id : str
             The ID of the Commonbase project.
-        prompt : str
+        prompt : str, optional
             The prompt for which a completion is generated.
-
+        variables : dict[str, str], optional
+            The list of variables to use with Commonbase managed prompts.
         chat_context : ChatContext, optional
             The list of chat messages in a conversation
         user_id : str, optional
@@ -123,8 +124,10 @@ class Completion:
 
         Raises
         ------
+        CommonbaseException
+            If the request parameters are invalid.
         CommonbaseApiException
-            If the request is malformed or there is an API error.
+            If there is an API error.
         """
 
         response = _send_completion_request(
