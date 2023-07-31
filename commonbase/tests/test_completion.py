@@ -1,45 +1,46 @@
 import os
 import pytest
-import commonbase
+from commonbase.exceptions import CommonbaseApiException, CommonbaseException
+from commonbase.completion import Completion
+from commonbase.chat_context import ChatContext, ChatMessage
+from commonbase.provider_config import ProviderConfig, OpenAIParams
 
 
 def test_create_no_api_key():
-    with pytest.raises(commonbase.CommonbaseException):
-        commonbase.Completion.create(api_key=None, project_id="")
+    with pytest.raises(CommonbaseException):
+        Completion.create(api_key=None, project_id="")
 
 
 def test_create_no_project_id():
-    with pytest.raises(commonbase.CommonbaseApiException):
-        commonbase.Completion.create(api_key="", project_id=None)  # type: ignore
+    with pytest.raises(CommonbaseApiException):
+        Completion.create(api_key="", project_id=None)  # type: ignore
 
 
 def test_stream_no_api_key():
-    with pytest.raises(commonbase.CommonbaseException):
-        for _ in commonbase.Completion.stream(api_key=None, project_id=""):
+    with pytest.raises(CommonbaseException):
+        for _ in Completion.stream(api_key=None, project_id=""):
             pass
 
 
 def test_stream_no_project_id():
-    with pytest.raises(commonbase.CommonbaseApiException):
-        for _ in commonbase.Completion.stream(api_key="", project_id=None, prompt=""):  # type: ignore
+    with pytest.raises(CommonbaseApiException):
+        for _ in Completion.stream(api_key="", project_id=None, prompt=""):  # type: ignore
             pass
 
 
 def test_create_invalid_project_id():
-    with pytest.raises(commonbase.CommonbaseApiException):
-        commonbase.Completion.create(api_key="", project_id="", prompt="Hello")
+    with pytest.raises(CommonbaseApiException):
+        Completion.create(api_key="", project_id="", prompt="Hello")
 
 
 def test_stream_invalid_project_id():
-    with pytest.raises(commonbase.CommonbaseApiException):
-        for _ in commonbase.Completion.stream(
-            api_key="", project_id="", prompt="Hello"
-        ):
+    with pytest.raises(CommonbaseApiException):
+        for _ in Completion.stream(api_key="", project_id="", prompt="Hello"):
             pass
 
 
 def test_completion_prompt():
-    result = commonbase.Completion.create(
+    result = Completion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="Hello",
@@ -60,7 +61,7 @@ def test_completion_prompt():
 
 
 def test_completion_response():
-    result = commonbase.Completion.create(
+    result = Completion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="Please return the string '123abc' to me without the quotes.",
@@ -70,7 +71,7 @@ def test_completion_response():
 
 
 def test_completion_variables():
-    result = commonbase.Completion.create(
+    result = Completion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         variables={"user_name": "USERNAME", "email": "USER@COMPANY.COM"},
@@ -82,7 +83,7 @@ def test_completion_variables():
 def test_completion_stream():
     response_count = 0
 
-    for response in commonbase.Completion.stream(
+    for response in Completion.stream(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="Tell me about artificial intelligence.",
@@ -94,21 +95,21 @@ def test_completion_stream():
 
 
 def test_completion_context():
-    context = commonbase.ChatContext(
+    context = ChatContext(
         [
-            commonbase.ChatMessage(role="user", content="Where is Berlin located?"),
-            commonbase.ChatMessage(role="assistant", content="In the EU."),
-            commonbase.ChatMessage(role="user", content="What country?"),
+            ChatMessage(role="user", content="Where is Berlin located?"),
+            ChatMessage(role="assistant", content="In the EU."),
+            ChatMessage(role="user", content="What country?"),
         ]
     )
 
-    result = commonbase.Completion.create(
+    result = Completion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
         prompt="You help people with geography.",
         chat_context=context,
-        provider_config=commonbase.ProviderConfig(
-            provider="cb-openai-eu", params=commonbase.OpenAIParams(type="chat")
+        provider_config=ProviderConfig(
+            provider="cb-openai-eu", params=OpenAIParams(type="chat")
         ),
     )
 

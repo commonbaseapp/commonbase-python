@@ -7,7 +7,15 @@ from commonbase.exceptions import CommonbaseApiException, CommonbaseException
 from commonbase.chat_context import ChatContext
 from commonbase.provider_config import ProviderConfig
 from commonbase.truncation_config import TruncationConfig
-from pkg_resources import get_distribution
+from importlib.metadata import version, PackageNotFoundError
+
+
+def _get_sdk_version() -> str:
+    try:
+        return version("commonbase")
+    except PackageNotFoundError:
+        # This error is thrown during testing.
+        return "0.0.0"
 
 
 def _format_body(
@@ -66,7 +74,7 @@ def _send_completion_request(
 
     headers = {
         "Authorization": api_key,
-        "User-Agent": f"commonbase-python/{get_distribution('commonbase').version}",
+        "User-Agent": f"commonbase-python/{_get_sdk_version()}",
     }
 
     if stream:
