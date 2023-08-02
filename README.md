@@ -22,8 +22,8 @@ To create a completion, provide your Project ID, API Key, and prompt to `Complet
 import commonbase
 
 result = commonbase.Completion.create(
-    api_key="YOUR_API_KEY",
-    project_id="YOUR_PROJECT_ID",
+    api_key="API_KEY",
+    project_id="PROJECT_ID",
     prompt="Hello!"
 )
 
