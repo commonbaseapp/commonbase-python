@@ -53,6 +53,7 @@ def _send_completion_request(
     chat_context: Optional[ChatContext],
     user_id: Optional[str],
     truncate_variable: Optional[TruncationConfig],
+    provider_api_key: Optional[str],
     provider_config: Optional[ProviderConfig],
     stream: bool,
 ) -> requests.Response:
@@ -80,6 +81,10 @@ def _send_completion_request(
     if stream:
         headers["Accept"] = "text/event-stream"
 
+    print(provider_api_key)
+    if provider_api_key is not None:
+        headers["Provider-API-Key"] = provider_api_key
+
     return requests.post(
         "https://api.commonbase.com/completions",
         stream=stream,
@@ -99,6 +104,7 @@ class Completion:
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
         truncate_variable: Optional[TruncationConfig] = None,
+        provider_api_key: Optional[str] = None,
         provider_config: Optional[ProviderConfig] = None,
     ) -> CompletionResponse:
         """Creates a completion for the given prompt.
@@ -119,6 +125,8 @@ class Completion:
             The User ID that will be logged for the invocation.
         truncate_variable : TruncationConfig, optional
             Configures variable truncation.
+        provider_api_key : str, optional
+            The API Key used to authenticate with a provider.
         provider_config : ProviderConfig, optional
             Configures the completion provider to use, currently OpenAI or Anthropic.
 
@@ -138,6 +146,7 @@ class Completion:
             chat_context=chat_context,
             user_id=user_id,
             truncate_variable=truncate_variable,
+            provider_api_key=provider_api_key,
             provider_config=provider_config,
             stream=False,
         )
@@ -159,6 +168,7 @@ class Completion:
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
         truncate_variable: Optional[TruncationConfig] = None,
+        provider_api_key: Optional[str] = None,
         provider_config: Optional[ProviderConfig] = None,
     ) -> Generator[CompletionResponse, None, None]:
         """Creates a completion stream for the given prompt.
@@ -174,6 +184,7 @@ class Completion:
             chat_context=chat_context,
             user_id=user_id,
             truncate_variable=truncate_variable,
+            provider_api_key=provider_api_key,
             provider_config=provider_config,
             stream=True,
         )
