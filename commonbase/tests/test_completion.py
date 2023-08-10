@@ -8,34 +8,51 @@ from commonbase.provider_config import ProviderConfig, OpenAIParams
 
 def test_create_no_api_key():
     with pytest.raises(CommonbaseException):
-        Completion.create(api_key=None, project_id="")
+        Completion.create(
+            api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""
+        )
 
 
 def test_create_no_project_id():
     with pytest.raises(CommonbaseApiException):
-        Completion.create(api_key="", project_id=None)  # type: ignore
+        Completion.create(api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt="")  # type: ignore
+
+
+def test_create_no_prompt():
+    with pytest.raises(CommonbaseApiException):
+        Completion.create(api_key=os.getenv("CB_API_KEY") or "", project_id=os.getenv("CB_PROJECT_ID") or "", prompt=None)  # type: ignore
 
 
 def test_stream_no_api_key():
     with pytest.raises(CommonbaseException):
-        for _ in Completion.stream(api_key=None, project_id=""):
+        for _ in Completion.stream(api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""):  # type: ignore
             pass
 
 
 def test_stream_no_project_id():
     with pytest.raises(CommonbaseApiException):
-        for _ in Completion.stream(api_key="", project_id=None, prompt=""):  # type: ignore
+        for _ in Completion.stream(api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt=""):  # type: ignore
+            pass
+
+
+def test_stream_no_prompt():
+    with pytest.raises(CommonbaseApiException):
+        for _ in Completion.stream(api_key=os.getenv("CB_API_KEY") or "", project_id=os.getenv("CB_PROJECT_ID") or "", prompt=None):  # type: ignore
             pass
 
 
 def test_create_invalid_project_id():
     with pytest.raises(CommonbaseApiException):
-        Completion.create(api_key="", project_id="", prompt="Hello")
+        Completion.create(
+            api_key=os.getenv("CB_API_KEY") or "", project_id="", prompt="Hello"
+        )
 
 
 def test_stream_invalid_project_id():
     with pytest.raises(CommonbaseApiException):
-        for _ in Completion.stream(api_key="", project_id="", prompt="Hello"):
+        for _ in Completion.stream(
+            api_key=os.getenv("CB_API_KEY") or "", project_id="", prompt="Hello"
+        ):
             pass
 
 
@@ -74,6 +91,7 @@ def test_completion_variables():
     result = Completion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
+        prompt="My name is {{user_name}} and my email is {{email}}",
         variables={"user_name": "USERNAME", "email": "USER@COMPANY.COM"},
     )
 
