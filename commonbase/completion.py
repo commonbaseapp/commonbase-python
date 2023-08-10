@@ -20,7 +20,7 @@ def _get_sdk_version() -> str:
 
 def _format_body(
     project_id: str,
-    prompt: Optional[str] = None,
+    prompt: str,
     variables: Optional[dict[str, str]] = None,
     chat_context: Optional[ChatContext] = None,
     user_id: Optional[str] = None,
@@ -48,7 +48,7 @@ def _format_body(
 def _send_completion_request(
     api_key: str,
     project_id: str,
-    prompt: Optional[str],
+    prompt: str,
     variables: Optional[dict[str, str]],
     chat_context: Optional[ChatContext],
     user_id: Optional[str],
@@ -99,7 +99,7 @@ class Completion:
         cls,
         api_key: str,
         project_id: str,
-        prompt: Optional[str] = None,
+        prompt: str,
         variables: Optional[dict[str, str]] = None,
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
@@ -115,7 +115,7 @@ class Completion:
             The Commonbase API key used to authenticate the request.
         project_id : str
             The ID of the Commonbase project.
-        prompt : str, optional
+        prompt : str
             The prompt for which a completion is generated.
         variables : dict[str, str], optional
             The list of variables to use with Commonbase managed prompts.
@@ -163,7 +163,7 @@ class Completion:
         cls,
         api_key: str,
         project_id: str,
-        prompt: Optional[str] = None,
+        prompt: str,
         variables: Optional[dict[str, str]] = None,
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
