@@ -6,7 +6,6 @@ from commonbase.completion_response import CompletionResponse
 from commonbase.exceptions import CommonbaseApiException, CommonbaseException
 from commonbase.chat_context import ChatContext
 from commonbase.provider_config import ProviderConfig
-from commonbase.truncation_config import TruncationConfig
 from importlib.metadata import version, PackageNotFoundError
 
 
@@ -24,7 +23,6 @@ def _format_body(
     variables: Optional[dict[str, str]] = None,
     chat_context: Optional[ChatContext] = None,
     user_id: Optional[str] = None,
-    truncate_variable: Optional[TruncationConfig] = None,
     provider_config: Optional[ProviderConfig] = None,
     stream: bool = False,
 ):
@@ -34,9 +32,6 @@ def _format_body(
         "variables": variables,
         "context": chat_context._as_json() if chat_context is not None else None,
         "userId": user_id,
-        "truncateVariable": truncate_variable._as_json()
-        if truncate_variable is not None
-        else None,
         "providerConfig": provider_config._as_json()
         if provider_config is not None
         else None,
@@ -52,7 +47,6 @@ def _send_completion_request(
     variables: Optional[dict[str, str]],
     chat_context: Optional[ChatContext],
     user_id: Optional[str],
-    truncate_variable: Optional[TruncationConfig],
     provider_api_key: Optional[str],
     provider_config: Optional[ProviderConfig],
     stream: bool,
@@ -68,7 +62,6 @@ def _send_completion_request(
         variables=variables,
         chat_context=chat_context,
         user_id=user_id,
-        truncate_variable=truncate_variable,
         provider_config=provider_config,
         stream=stream,
     )
@@ -103,7 +96,6 @@ class Completion:
         variables: Optional[dict[str, str]] = None,
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
-        truncate_variable: Optional[TruncationConfig] = None,
         provider_api_key: Optional[str] = None,
         provider_config: Optional[ProviderConfig] = None,
     ) -> CompletionResponse:
@@ -123,8 +115,6 @@ class Completion:
             The list of chat messages in a conversation
         user_id : str, optional
             The User ID that will be logged for the invocation.
-        truncate_variable : TruncationConfig, optional
-            Configures variable truncation.
         provider_api_key : str, optional
             The API Key used to authenticate with a provider.
         provider_config : ProviderConfig, optional
@@ -145,7 +135,6 @@ class Completion:
             variables=variables,
             chat_context=chat_context,
             user_id=user_id,
-            truncate_variable=truncate_variable,
             provider_api_key=provider_api_key,
             provider_config=provider_config,
             stream=False,
@@ -167,7 +156,6 @@ class Completion:
         variables: Optional[dict[str, str]] = None,
         chat_context: Optional[ChatContext] = None,
         user_id: Optional[str] = None,
-        truncate_variable: Optional[TruncationConfig] = None,
         provider_api_key: Optional[str] = None,
         provider_config: Optional[ProviderConfig] = None,
     ) -> Generator[CompletionResponse, None, None]:
@@ -183,7 +171,6 @@ class Completion:
             variables=variables,
             chat_context=chat_context,
             user_id=user_id,
-            truncate_variable=truncate_variable,
             provider_api_key=provider_api_key,
             provider_config=provider_config,
             stream=True,
