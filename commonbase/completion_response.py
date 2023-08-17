@@ -43,7 +43,6 @@ class CompletionChoice:
 
     @property
     def function_call(self) -> Optional[FunctionCallResponse]:
-        print(self.json)
         return (
             FunctionCallResponse(self.json["function_call"])
             if "function_call" in self.json
