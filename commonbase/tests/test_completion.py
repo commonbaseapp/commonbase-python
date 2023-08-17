@@ -62,7 +62,7 @@ def test_completion_response():
         prompt="Please return the string '123abc' to me without the quotes.",
     )
 
-    assert result.completed and result.best_result.strip() == "123abc"
+    assert result.completed and result.best_choice.text.strip() == "123abc"
 
 
 def test_completion_variables():
@@ -73,7 +73,7 @@ def test_completion_variables():
         variables={"user_name": "USERNAME", "email": "USER@COMPANY.COM"},
     )
 
-    assert result.completed and result.best_result is not None
+    assert result.completed and result.best_choice.text is not None
 
 
 # def test_completion_stream():
@@ -84,7 +84,7 @@ def test_completion_variables():
 #         project_id=os.getenv("CB_PROJECT_ID") or "",
 #         prompt="Tell me about artificial intelligence.",
 #     ):
-#         assert len(response.choices) > 0 and response.best_result is not None
+#         assert len(response.choices) > 0 and response.best_choice.text is not None
 #         response_count += 1
 
 #     assert response_count > 0

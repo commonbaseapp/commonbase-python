@@ -24,4 +24,4 @@ def test_provider_with_valid_api_key():
         provider_model="text-davinci-002",
     )
 
-    assert result.completed and result.best_result.strip() == "123abc"
+    assert result.completed and result.best_choice.text.strip() == "123abc"

@@ -1,15 +1,20 @@
 from typing import Literal, NotRequired, TypedDict, Optional
 
 
-class FunctionCallMessage(TypedDict):
+class FunctionCall(TypedDict):
     name: str
     arguments: Optional[str]
 
 
 class RegularChatMessage(TypedDict):
-    role: Literal["system", "user", "assistant"]
+    role: Literal["system", "user"]
+    content: str
+
+
+class AssistantChatMessage(TypedDict):
+    role: Literal["assistant"]
     content: str | None
-    function_call: NotRequired[FunctionCallMessage]
+    function_call: NotRequired[FunctionCall]
 
 
 class FunctionChatMessage(TypedDict):
@@ -28,5 +33,5 @@ class ChatFunction(TypedDict):
     parameters: object
 
 
-ChatMessage = RegularChatMessage | FunctionChatMessage
+ChatMessage = RegularChatMessage | AssistantChatMessage | FunctionChatMessage
 FunctionCallConfig = Literal["none", "auto"] | FunctionCallConfigName

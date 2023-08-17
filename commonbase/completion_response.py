@@ -1,4 +1,24 @@
 from typing import Optional, Literal, Any
+import json
+from commonbase.chat_context import FunctionCall, AssistantChatMessage
+
+
+class FunctionCallResponse:
+    def __init__(self, json: FunctionCall) -> None:
+        self.json = json
+
+    @property
+    def name(self) -> str:
+        return self.json["name"]
+
+    @property
+    def arguments(self) -> dict[str, Any]:
+        try:
+            return json.loads(
+                self.json["arguments"] or "" if "arguments" in self.json else ""
+            )
+        except:
+            return {}
 
 
 class CompletionChoice:
@@ -7,7 +27,7 @@ class CompletionChoice:
 
     @property
     def text(self) -> str:
-        return self.json["text"]
+        return self.json["text"] if "text" in self.json else ""
 
     @property
     def role(self) -> Optional[str]:
@@ -20,6 +40,26 @@ class CompletionChoice:
     @property
     def finish_reason(self) -> Optional[str]:
         return self.json["finish_reason"] if "finish_reason" in self.json else None
+
+    @property
+    def function_call(self) -> Optional[FunctionCallResponse]:
+        print(self.json)
+        return (
+            FunctionCallResponse(self.json["function_call"])
+            if "function_call" in self.json
+            else None
+        )
+
+    def to_assistant_chat_message(self) -> AssistantChatMessage:
+        function_call = self.function_call
+        if function_call is not None:
+            return {
+                "role": "assistant",
+                "content": self.text,
+                "function_call": function_call.json,
+            }
+        else:
+            return {"role": "assistant", "content": self.text}
 
 
 class CompletionResponse:
@@ -51,5 +91,5 @@ class CompletionResponse:
         return [CompletionChoice(choice) for choice in self.json["choices"]]
 
     @property
-    def best_result(self) -> str:
-        return self.choices[0].text
+    def best_choice(self) -> CompletionChoice:
+        return CompletionChoice(self.json["choices"][0])

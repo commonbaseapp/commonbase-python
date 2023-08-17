@@ -105,7 +105,7 @@ def test_chat_completion_response():
         ],
     )
 
-    assert result.completed and result.best_result.strip() == "123abc"
+    assert result.completed and result.best_choice.text.strip() == "123abc"
 
 
 def test_chat_completion_stream():
@@ -118,7 +118,7 @@ def test_chat_completion_stream():
             {"role": "user", "content": "Tell me about artificial intelligence."}
         ],
     ):
-        assert len(response.choices) > 0 and response.best_result is not None
+        assert len(response.choices) > 0 and response.best_choice.text is not None
         response_count += 1
 
     assert response_count > 0
@@ -137,4 +137,4 @@ def test_completion_chat():
         provider="cb-openai-eu",
     )
 
-    assert result.completed and "germany" in result.best_result.lower()
+    assert result.completed and "germany" in result.best_choice.text.lower()
