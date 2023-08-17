@@ -21,12 +21,14 @@ def _get_sdk_version() -> str:
         return "0.0.0"
 
 
-def _get_default_provider_model(provider: str, type: _RequestType):
+def _get_default_provider_model(provider: str, type: _RequestType, hasFunctions: bool):
     if "openai" in provider:
         if type == "text":
             return "text-davinci-003"
         if type == "chat":
-            return "gpt-3.5-turbo"
+            return "gpt-4" if hasFunctions else "gpt-3.5-turbo"
+        if type == "embeddings":
+            return "text-embedding-ada-002"
     if "anthropic" in provider:
         return "claude-v1"
 
@@ -45,11 +47,15 @@ def _format_body(
     provider_params: Optional[ProviderParams],
     stream: bool = False,
 ) -> dict[str, Any]:
-    providerName = provider if provider is not None else "cb-openai-eu"
+    providerName = (
+        provider
+        if provider is not None
+        else ("cb-openai-us" if functions is not None else "cb-openai-eu")
+    )
     providerModel = (
         provider_model
         if provider_model is not None
-        else _get_default_provider_model(providerName, type)
+        else _get_default_provider_model(providerName, type, functions is not None)
     )
     providerParams = {
         **(provider_params if provider_params is not None else {}),

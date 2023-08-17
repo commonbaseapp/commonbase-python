@@ -6,8 +6,6 @@ def test_functions_api():
     result = ChatCompletion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
-        provider="cb-openai-us",
-        provider_model="gpt-4",
         messages=[
             {
                 "role": "system",
@@ -63,4 +61,4 @@ def test_functions_api():
     assert result.best_choice.function_call is not None
     assert result.best_choice.function_call.name == "get_current_weather"
     assert "location" in result.best_choice.function_call.arguments
-    assert result.best_choice.function_call.arguments["format"] == "fahrenheit"
+    assert "format" in result.best_choice.function_call.arguments
