@@ -1,8 +1,8 @@
-from typing import Optional, Literal
+from typing import Optional, Literal, Any
 
 
 class CompletionChoice:
-    def __init__(self, json):
+    def __init__(self, json: dict[str, Any]):
         self.json = json
 
     @property
@@ -23,7 +23,7 @@ class CompletionChoice:
 
 
 class CompletionResponse:
-    def __init__(self, json: dict):
+    def __init__(self, json: dict[str, Any]):
         self.json = json
 
     @property

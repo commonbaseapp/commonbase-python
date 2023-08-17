@@ -1,43 +1,55 @@
 import os
 import pytest
 from commonbase.exceptions import CommonbaseApiException, CommonbaseException
-from commonbase.completion import Completion
-from commonbase.chat_context import ChatContext, ChatMessage
-from commonbase.provider_config import ProviderConfig, OpenAIParams
+from commonbase.completion import Completion, ChatCompletion
 
 
 def test_create_no_api_key():
     with pytest.raises(CommonbaseException):
         Completion.create(
-            api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""
+            api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""  # type: ignore
         )
 
 
 def test_create_no_project_id():
     with pytest.raises(CommonbaseApiException):
-        Completion.create(api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt="")  # type: ignore
+        Completion.create(
+            api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt=""  # type: ignore
+        )
 
 
 def test_create_no_prompt():
     with pytest.raises(CommonbaseApiException):
-        Completion.create(api_key=os.getenv("CB_API_KEY") or "", project_id=os.getenv("CB_PROJECT_ID") or "", prompt=None)  # type: ignore
+        Completion.create(
+            api_key=os.getenv("CB_API_KEY") or "",
+            project_id=os.getenv("CB_PROJECT_ID") or "",
+            prompt=None,  # type: ignore
+        )
 
 
 def test_stream_no_api_key():
     with pytest.raises(CommonbaseException):
-        for _ in Completion.stream(api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""):  # type: ignore
+        for _ in Completion.stream(
+            api_key=None, project_id=os.getenv("CB_PROJECT_ID") or "", prompt=""  # type: ignore
+        ):
             pass
 
 
 def test_stream_no_project_id():
     with pytest.raises(CommonbaseApiException):
-        for _ in Completion.stream(api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt=""):  # type: ignore
+        for _ in Completion.stream(
+            api_key=os.getenv("CB_API_KEY") or "", project_id=None, prompt=""  # type: ignore
+        ):
             pass
 
 
 def test_stream_no_prompt():
     with pytest.raises(CommonbaseApiException):
-        for _ in Completion.stream(api_key=os.getenv("CB_API_KEY") or "", project_id=os.getenv("CB_PROJECT_ID") or "", prompt=None):  # type: ignore
+        for _ in Completion.stream(
+            api_key=os.getenv("CB_API_KEY") or "",
+            project_id=os.getenv("CB_PROJECT_ID") or "",
+            prompt=None,  # type: ignore
+        ):
             pass
 
 
@@ -112,23 +124,17 @@ def test_completion_stream():
     assert response_count > 0
 
 
-def test_completion_context():
-    context = ChatContext(
-        [
-            ChatMessage(role="user", content="Where is Berlin located?"),
-            ChatMessage(role="assistant", content="In the EU."),
-            ChatMessage(role="user", content="What country?"),
-        ]
-    )
-
-    result = Completion.create(
+def test_completion_chat():
+    result = ChatCompletion.create(
         api_key=os.getenv("CB_API_KEY") or "",
         project_id=os.getenv("CB_PROJECT_ID") or "",
-        prompt="You help people with geography.",
-        chat_context=context,
-        provider_config=ProviderConfig(
-            provider="cb-openai-eu", params=OpenAIParams(type="chat")
-        ),
+        messages=[
+            {"role": "system", "content": "You help people with geography."},
+            {"role": "user", "content": "Where is Berlin located?"},
+            {"role": "assistant", "content": "In the EU."},
+            {"role": "user", "content": "What country?"},
+        ],
+        provider="cb-openai-eu",
     )
 
     assert result.completed and "germany" in result.best_result.lower()

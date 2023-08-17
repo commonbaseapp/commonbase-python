@@ -1,40 +1,26 @@
-from typing import Literal, Optional, Sequence, Union
-from dataclasses import dataclass, asdict
+from typing import Literal, Sequence, Union, NotRequired, TypedDict
 
 
-@dataclass
-class OpenAIParams:
-    type: Literal["chat", "text"]
-    model: Optional[str] = None
-    temperature: Optional[float] = None
-    top_p: Optional[float] = None
-    max_tokens: Optional[int] = None
-    n: Optional[int] = None
-    frequency_penalty: Optional[float] = None
-    presence_penalty: Optional[float] = None
-    stop: Optional[Union[str, Sequence[str]]] = None
-    best_of: Optional[int] = None
-    suffix: Optional[str] = None
-    logprobs: Optional[int] = None
+class OpenAIParams(TypedDict):
+    temperature: NotRequired[float]
+    top_p: NotRequired[float]
+    max_tokens: NotRequired[int]
+    n: NotRequired[int]
+    frequency_penalty: NotRequired[float]
+    presence_penalty: NotRequired[float]
+    stop: NotRequired[Union[str, Sequence[str]]]
+    best_of: NotRequired[int]
+    suffix: NotRequired[str]
+    logprobs: NotRequired[int]
 
 
-@dataclass
-class AnthropicParams:
-    type: Union[Literal["chat"], None] = None
-    model: Optional[str] = None
-    max_tokens_to_sample: Optional[int] = None
-    temperature: Optional[float] = None
-    stop_sequences: Optional[Sequence[str]] = None
-    top_k: Optional[float] = None
-    top_p: Optional[float] = None
+class AnthropicParams(TypedDict):
+    max_tokens_to_sample: NotRequired[int]
+    temperature: NotRequired[float]
+    stop_sequences: NotRequired[Sequence[str]]
+    top_k: NotRequired[float]
+    top_p: NotRequired[float]
 
 
-@dataclass
-class ProviderConfig:
-    provider: Literal["openai", "cb-openai-eu", "anthropic"]
-    params: Union[OpenAIParams, AnthropicParams]
-
-    def _as_json(self) -> dict:
-        return asdict(
-            self, dict_factory=lambda x: {k: v for (k, v) in x if v is not None}
-        )
+ProviderName = Literal["openai", "cb-openai-eu", "cb-openai-us", "anthropic"]
+ProviderParams = OpenAIParams | AnthropicParams
