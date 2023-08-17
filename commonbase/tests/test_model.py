@@ -1,47 +1,25 @@
-from commonbase.chat_context import ChatContext, ChatMessage
-from commonbase.provider_config import ProviderConfig, OpenAIParams
-from commonbase.completion import _format_body
-from dataclasses import asdict
-
-
-def test_chat_context_json_format():
-    context = asdict(
-        ChatContext(
-            messages=[
-                ChatMessage(role="system", content="system message"),
-                ChatMessage(role="user", content="user message"),
-            ]
-        )
-    )
-
-    assert "messages" in context and len(context["messages"]) == 2
-
-    systemMessage = context["messages"][0]
-    userMessage = context["messages"][1]
-
-    assert (
-        isinstance(systemMessage, dict)
-        and systemMessage["role"] == "system"
-        and systemMessage["content"] == "system message"
-    )
-    assert (
-        isinstance(userMessage, dict)
-        and userMessage["role"] == "user"
-        and userMessage["content"] == "user message"
-    )
+from commonbase.completion import _format_body  # type: ignore
 
 
 def test_request_body_format():
     body = _format_body(
         project_id="<project_id>",
+        type="chat",
         prompt="<prompt>",
         variables={"test1": "value"},
-        chat_context=ChatContext([ChatMessage(role="system", content="<content>")]),
+        messages=[{"role": "user", "content": "test content"}],
+        functions=[
+            {
+                "description": "test description",
+                "name": "func_name",
+                "parameters": {"test": "test"},
+            }
+        ],
+        function_call="auto",
         user_id="<userId>",
-        provider_config=ProviderConfig(
-            provider="cb-openai-eu",
-            params=OpenAIParams(type="chat", model="model_name"),
-        ),
+        provider="cb-openai-eu",
+        provider_model="model_name",
+        provider_params={"max_tokens": 10},
         stream=True,
     )
 
@@ -49,11 +27,19 @@ def test_request_body_format():
         "projectId": "<project_id>",
         "prompt": "<prompt>",
         "variables": {"test1": "value"},
-        "context": {"messages": [{"role": "system", "content": "<content>"}]},
+        "messages": [{"role": "user", "content": "test content"}],
+        "functions": [
+            {
+                "description": "test description",
+                "name": "func_name",
+                "parameters": {"test": "test"},
+            }
+        ],
+        "functionCall": "auto",
         "userId": "<userId>",
         "providerConfig": {
             "provider": "cb-openai-eu",
-            "params": {"type": "chat", "model": "model_name"},
+            "params": {"type": "chat", "model": "model_name", "max_tokens": 10},
         },
         "stream": True,
     }

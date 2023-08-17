@@ -1,16 +1,37 @@
-from typing import Literal, Sequence
-from dataclasses import dataclass, asdict
+from typing import Literal, NotRequired, TypedDict, Optional
 
 
-@dataclass
-class ChatMessage:
-    role: Literal["system", "user", "assistant"]
+class FunctionCall(TypedDict):
+    name: str
+    arguments: Optional[str]
+
+
+class RegularChatMessage(TypedDict):
+    role: Literal["system", "user"]
     content: str
 
 
-@dataclass
-class ChatContext:
-    messages: Sequence[ChatMessage]
+class AssistantChatMessage(TypedDict):
+    role: Literal["assistant"]
+    content: str | None
+    function_call: NotRequired[FunctionCall]
 
-    def _as_json(self) -> dict:
-        return asdict(self)
+
+class FunctionChatMessage(TypedDict):
+    role: Literal["function"]
+    name: str
+    content: str
+
+
+class FunctionCallConfigName(TypedDict):
+    name: str
+
+
+class ChatFunction(TypedDict):
+    name: str
+    description: str
+    parameters: object
+
+
+ChatMessage = RegularChatMessage | AssistantChatMessage | FunctionChatMessage
+FunctionCallConfig = Literal["none", "auto"] | FunctionCallConfigName
