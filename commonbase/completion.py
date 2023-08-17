@@ -198,47 +198,47 @@ class Completion:
 
         return CompletionResponse(response.json())
 
-    @classmethod
-    def stream(
-        cls,
-        api_key: str,
-        project_id: str,
-        prompt: str,
-        variables: Optional[dict[str, str]] = None,
-        user_id: Optional[str] = None,
-        provider_api_key: Optional[str] = None,
-        provider: Optional[ProviderName] = None,
-        provider_model: Optional[str] = None,
-        provider_params: Optional[ProviderParams] = None,
-    ) -> Generator[CompletionResponse, None, None]:
-        """Creates a completion stream for the given prompt.
+    # @classmethod
+    # def stream(
+    #     cls,
+    #     api_key: str,
+    #     project_id: str,
+    #     prompt: str,
+    #     variables: Optional[dict[str, str]] = None,
+    #     user_id: Optional[str] = None,
+    #     provider_api_key: Optional[str] = None,
+    #     provider: Optional[ProviderName] = None,
+    #     provider_model: Optional[str] = None,
+    #     provider_params: Optional[ProviderParams] = None,
+    # ) -> Generator[CompletionResponse, None, None]:
+    #     """Creates a completion stream for the given prompt.
 
-        This method is identical to Completion.create(), except it returns
-        a stream of completion responses.
-        """
-        response = _send_completion_request(
-            api_key=api_key,
-            project_id=project_id,
-            type="text",
-            prompt=prompt,
-            messages=None,
-            functions=None,
-            function_call=None,
-            variables=variables,
-            user_id=user_id,
-            provider_api_key=provider_api_key,
-            provider=provider,
-            provider_model=provider_model,
-            provider_params=provider_params,
-            stream=True,
-        )
+    #     This method is identical to Completion.create(), except it returns
+    #     a stream of completion responses.
+    #     """
+    #     response = _send_completion_request(
+    #         api_key=api_key,
+    #         project_id=project_id,
+    #         type="text",
+    #         prompt=prompt,
+    #         messages=None,
+    #         functions=None,
+    #         function_call=None,
+    #         variables=variables,
+    #         user_id=user_id,
+    #         provider_api_key=provider_api_key,
+    #         provider=provider,
+    #         provider_model=provider_model,
+    #         provider_params=provider_params,
+    #         stream=True,
+    #     )
 
-        if response.status_code >= 400:
-            raise CommonbaseApiException(response.json())
+    #     if response.status_code >= 400:
+    #         raise CommonbaseApiException(response.json())
 
-        client = sseclient.SSEClient(response)
-        for event in client.events():
-            yield CompletionResponse(json.loads(event.data))
+    #     client = sseclient.SSEClient(response)
+    #     for event in client.events():
+    #         yield CompletionResponse(json.loads(event.data))
 
 
 class ChatCompletion:
@@ -323,8 +323,8 @@ class ChatCompletion:
         api_key: str,
         project_id: str,
         messages: list[ChatMessage],
-        functions: Optional[list[ChatFunction]],
-        function_call: Optional[FunctionCallConfig],
+        functions: Optional[list[ChatFunction]] = None,
+        function_call: Optional[FunctionCallConfig] = None,
         user_id: Optional[str] = None,
         provider_api_key: Optional[str] = None,
         provider: Optional[ProviderName] = None,
