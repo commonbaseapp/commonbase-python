@@ -19,7 +19,7 @@ A Project ID and API Key are required for all Commonbase requests. You can find
 your project ID and generate an API key in the
 [Commonbase Dashboard](https://commonbase.com/).
 
-To create a completion, provide your Project ID, API Key, and prompt to
+To create a text completion, provide your Project ID, API Key, and prompt to
 `Completion.create`.
 
 ```py
@@ -34,7 +34,7 @@ result = commonbase.Completion.create(
 print(result.best_choice.text)
 ```
 
-To stream a completion as it is generated, use `Completion.stream`.
+To stream a completion as it is generated, use `ChatCompletion.stream`.
 
 For more examples, see
 [/examples](https://github.com/commonbaseapp/commonbase-python/tree/main/examples)
