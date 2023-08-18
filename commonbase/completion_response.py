@@ -15,7 +15,7 @@ class FunctionCallResponse:
     def arguments(self) -> dict[str, Any]:
         try:
             return json.loads(
-                self.json["arguments"] or "" if "arguments" in self.json else ""
+                self.json["arguments"] or "{}" if "arguments" in self.json else "{}"
             )
         except:
             return {}
@@ -35,7 +35,7 @@ class CompletionChoice:
 
     @property
     def index(self) -> int:
-        return self.json["index"]
+        return self.json["index"] if "index" in self.json else 0
 
     @property
     def finish_reason(self) -> Optional[str]:
@@ -91,4 +91,7 @@ class CompletionResponse:
 
     @property
     def best_choice(self) -> CompletionChoice:
-        return CompletionChoice(self.json["choices"][0])
+        try:
+            return CompletionChoice(self.json["choices"][0])
+        except IndexError:
+            return CompletionChoice({})
